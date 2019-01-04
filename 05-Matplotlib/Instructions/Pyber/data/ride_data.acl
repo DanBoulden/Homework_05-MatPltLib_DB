@@ -1,0 +1,136 @@
+@ACL1300
+^LAYOUT   ride_data                                                           59 D.T,
+city           ASCII       1  20    
+date           ASCII      21  19    
+fare           PRINT      40   5 2  
+ride_id        ASCII      45  13    
+^LAYOUT   sum_city_citytype                                                   40 D.T,
+city           ASCII       1  20    
+type           ASCII      21   8    
+COUNT          ACL        29  12 0 WIDTH 8  
+^LAYOUT   Sum_on_city_st_fair                                                 44 D.T,
+city           ASCII       1  20    
+fare           ACL        21  12 2 WIDTH 9  
+COUNT          ACL        33  12 0 WIDTH 8  
+avg_fare       COMPUTED             
+ *N 2 1
+ fare / COUNT
+^LAYOUT   city_group                                                          67 D.T,
+city           ASCII       1  20    
+date           ASCII      21  19    
+fare           PRINT      40   5 2  
+ride_id        ASCII      45  13    
+driver_count   PRINT      58   2 0  
+type           ASCII      60   8    
+^LAYOUT   city_data                                                           32 D.T,
+city           ASCII       1  20    
+driver_count   PRINT      21   2 0  
+type           ASCII      23   8    
+^LOGFILE  ride_data                                                                                                                                                                                                                                                            "" "ride_data.LOG"
+[PARENT_FOLDER_ID] 0
+^REPORT   Default_View                                                        ride_data                                                         D.T,
+[SKIP] 0
+[TLINES] 1
+[RLINES] 1
+[LINE] 1
+city                 WIDTH 17 PICTURE ""
+[LINE] 1
+date                 WIDTH 15 PICTURE ""
+[LINE] 1
+fare                 WIDTH 6 PICTURE ""
+[LINE] 1
+ride_id              WIDTH 12 PICTURE ""
+^FORMAT   ride_data                                                           ride_data                                                         "" "ride_data.fil" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+[LASTVIEW] "Default_View"
+[RETRIEVE] 0
+[REFRESH] DELIMITED "ride_data.fil" FROM "ride_data.csv" 0 SEPARATOR "," QUALIFIER NONE CONSECUTIVE STARTLINE 1 KEEPTITLE FIELD "city" C AT 1 DEC 0 WID 20 PIC "" AS "" FIELD "date" C AT 21 DEC 0 WID 19 PIC "" AS "" FIELD "fare" N AT 40 DEC 2 WID 5 PIC "" AS "" FIELD "ride_id" C AT 45 DEC 0 WID 13 PIC "" AS "" 
+^REPORT   Default_View                                                        city_data                                                         D.T,
+[SKIP] 0
+[TLINES] 1
+[RLINES] 1
+[LINE] 1
+city                 WIDTH 17 PICTURE ""
+[LINE] 1
+driver_count         WIDTH 12 PICTURE ""
+[LINE] 1
+type                 WIDTH 7 PICTURE ""
+^FORMAT   city_data                                                           city_data                                                         "" "city_data.fil" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+[LASTVIEW] "Default_View"
+[RETRIEVE] 0
+[REFRESH] DELIMITED "city_data.fil" FROM "city_data.csv" 0 SEPARATOR "," QUALIFIER NONE CONSECUTIVE STARTLINE 1 KEEPTITLE FIELD "city" C AT 1 DEC 0 WID 20 PIC "" AS "" FIELD "driver_count" N AT 21 DEC 0 WID 2 PIC "" AS "" FIELD "type" C AT 23 DEC 0 WID 8 PIC "" AS "" 
+^REPORT   Default_View                                                        city_group                                                        D.T,
+[SKIP] 0
+[TLINES] 1
+[RLINES] 1
+[LINE] 1
+city                 WIDTH 17 PICTURE ""
+[LINE] 1
+date                 WIDTH 15 PICTURE ""
+[LINE] 1
+fare                 WIDTH 6 PICTURE ""
+[LINE] 1
+ride_id              WIDTH 12 PICTURE ""
+[LINE] 1
+driver_count         WIDTH 21 PICTURE ""
+[LINE] 1
+type                 WIDTH 14 PICTURE ""
+^FORMAT   city_group                                                          city_group                                                        "" "city_group.FIL" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+~.12/22/2018   11:26:26 ride_data OPEN city_data SECONDARY
+~.12/22/2018   11:26:26 ride_data JOIN PKEY city FIELDS city date fare ride_id SKEY city WITH driver_count type PRIMARY TO "city_group" OPEN PRESORT SECSORT
+~Input : Records:2375        Control Total:0                    
+~Output: Records:2375        Control Total:0                    
+[LASTVIEW] "Default_View"
+^REPORT   Default_View                                                        sum_city_citytype                                                 D.T,
+[SKIP] 0
+[TLINES] 1
+[RLINES] 1
+[LINE] 1
+city                 WIDTH 12 PICTURE ""
+[LINE] 1
+type                 WIDTH 15 PICTURE ""
+[LINE] 1
+COUNT                PICTURE ""
+^FORMAT   sum_city_citytype                                                   sum_city_citytype                                                 "" "sum_city_citytype.FIL" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+~.12/22/2018   11:26:26 ride_data OPEN city_data SECONDARY
+~.12/22/2018   11:26:26 ride_data JOIN PKEY city FIELDS city date fare ride_id SKEY city WITH driver_count type PRIMARY TO "city_group" OPEN PRESORT SECSORT
+~Input : Records:2375        Control Total:0                    
+~Output: Records:2375        Control Total:0                    
+~.12/22/2018   11:28:45 city_group SUMMARIZE ON city type TO "sum_city_citytype.FIL" OPEN PRESORT
+~Input : Records:2375        Control Total:0                    
+~Output: Records:120         Control Total:0                    
+[LASTVIEW] "Default_View"
+^INDEX    ACLQSTMP8                                                           city_data                                                         "" "ACLQSTMP8.INX" 
+*INDEX ON DRIVER_COUNT TO "ACLQSTMP8"
+^INDEX    ACLQSTMP10                                                          city_data                                                         "" "ACLQSTMP10.INX" 
+*INDEX ON DRIVER_COUNT TO "ACLQSTMP10"
+^INDEX    ACLQSTMP11                                                          city_group                                                        "" "ACLQSTMP11.INX" 
+*INDEX ON TYPE TO "ACLQSTMP11"
+^FORMAT   Sum_on_city_st_fair                                                 Sum_on_city_st_fair                                               "" "Sum_on_city_st_fair.FIL" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+~.12/22/2018   11:26:26 ride_data OPEN city_data SECONDARY
+~.12/22/2018   11:26:26 ride_data JOIN PKEY city FIELDS city date fare ride_id SKEY city WITH driver_count type PRIMARY TO "city_group" OPEN PRESORT SECSORT
+~Input : Records:2375        Control Total:0                    
+~Output: Records:2375        Control Total:0                    
+~.12/22/2018   11:36:56 city_group SUMMARIZE ON city SUBTOTAL fare TO "Sum_on_city_st_fair.FIL" OPEN PRESORT
+~Input : Records:2375        Control Total:0                    
+~Output: Records:120         Control Total:0                    
+[LASTVIEW] "Default_View"
+^REPORT   Default_View                                                        Sum_on_city_st_fair                                               D.T,
+[SKIP] 0
+[TLINES] 1
+[RLINES] 1
+[LINE] 1
+city                 WIDTH 13 PICTURE ""
+[LINE] 1
+fare                 WIDTH 15 PICTURE ""
+[LINE] 1
+COUNT                PICTURE ""
+[LINE] 1
+avg_fare             PICTURE ""
+^INDEX    ACLQSTMP1                                                           city_group                                                        "" "ACLQSTMP1.INX" 
+*INDEX ON FARE TO "ACLQSTMP1"
+^OPEN f,T,city_group;f,F,city_data;
